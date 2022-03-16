@@ -47,10 +47,10 @@ for _, cnt in extensions:
     count += cnt
 
 def get_percent_bar(percent):
-    return ('\033[33;1m=\033[0m' * int(40 * percent)) + " " * (40 - int(40 * percent))
+    return f"[\033[33;1m{'=' * int(40 * percent)}\033[0m{' ' * (40 - int(40 * percent))}] "
 
 for ext, cnt in extensions:
     if cnt / count < 0.009:
         continue
 
-    print(f"[{get_percent_bar(cnt / count)}] \033[1m{(cnt / count) * 100:5.2f}%\033[0m .{ext}")
+    print(f"{get_percent_bar(cnt / count)}\033[1m{(cnt / count) * 100:5.2f}%\033[0m .{ext}")
