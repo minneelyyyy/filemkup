@@ -12,15 +12,16 @@ else:
     directory = os.getenv("PWD")
 
 
-def get_files(directory, hidden=False):
+def get_files(directory):
     for file in os.listdir(directory):
-        if not hidden and file[0] == '.':
+        if file[0] == '.':
             continue
 
-        if os.path.isdir(directory + '/' + file):
-            get_files(directory + '/' + file)
+        if os.path.isdir(f"{directory}/{file}"):
+            get_files(f"{directory}/{file}")
         else:
             files.append(file)
+
 
 get_files(directory)
 
@@ -50,7 +51,7 @@ def get_percent_bar(percent):
     return f"[\033[33;1m{'=' * int(40 * percent)}\033[0m{' ' * (40 - int(40 * percent))}] "
 
 for ext, cnt in extensions:
-    if cnt / count < 0.009:
+    if cnt / count < 0.01:
         continue
 
     print(f"{get_percent_bar(cnt / count)}\033[1m{(cnt / count) * 100:5.2f}%\033[0m .{ext}")
