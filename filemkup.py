@@ -32,6 +32,9 @@ def parse_args(args):
                 print(f"filemkup: error: \"{arg}\" does not exist")
                 exit(1)
     
+    if not ret["directory"]:
+        ret["directory"] = os.getenv("PWD")
+
     return ret
 
 
@@ -48,7 +51,6 @@ def get_files(directory, files):
 
 def main():
     extensions: dict[str, int] = {}
-    directory = os.getenv("PWD")
     files: list[str] = []
     options = parse_args(sys.argv[1:])
 
