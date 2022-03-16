@@ -108,7 +108,8 @@ def main():
 
     for ext, cnt in extensions:
         if not options["show_all"] and (cnt / total * 100) <= float(options["minimum_percent"]):
-            continue
+            # every count after this will be smaller, so it makes sense to exit here
+            exit()
 
         bar = get_percent_bar(cnt / total, 50)
         percent = get_percent(cnt / total)
