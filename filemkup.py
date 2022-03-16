@@ -13,25 +13,38 @@ def parse_args(args):
     ret = {
         "print_bar": True,
         "print_percent": True,
+        "show_all": False,
         "directory": "",
+        "minimum_percent": 1.00,
     }
 
-    for arg in args:
-        if arg in ("--dont-print-bar", "-b"):
+    skip = False
+
+    for i in range(len(args)):
+        if skip:
+            skip = False
+            continue
+
+        if args[i] in ("--dont-print-bar", "-b"):
             ret["print_bar"] = False
-        elif arg in ("--dont-print-percent", "-p"):
+        elif args[i] in ("--dont-print-percent", "-p"):
             ret["print_percent"] = False
+        elif args[i] in ("--show-all", "-A"):
+            ret["show_all"] = True
+        elif args[i] in ("--minimum", "-m"):
+            ret["minimum_percent"] = args[i + 1]
+            skip = True
         else:
-            if os.path.exists(arg):
-                if os.path.isdir(arg):
-                    ret["directory"] = arg
+            if os.path.exists(args[i]):
+                if os.path.isdir(args[i]):
+                    ret["directory"] = args[i]
                 else:
-                    print(f"filemkup: error: \"{arg}\" is not a directory")
+                    print(f"filemkup: error: \"{args[i]}\" is not a directory")
                     exit(1)
             else:
-                print(f"filemkup: error: \"{arg}\" does not exist")
+                print(f"filemkup: error: \"{args[i]}\" does not exist")
                 exit(1)
-    
+
     if not ret["directory"]:
         ret["directory"] = os.getenv("PWD")
 
@@ -65,7 +78,7 @@ def main():
 
         if not extension in extensions:
             extensions[extension] = 0
-        
+
         extensions[extension] += 1
 
     # extensions gets converted into list[(str, int)]
@@ -77,25 +90,30 @@ def main():
         total += cnt
 
     
-    def get_percent_bar(percent):
+    def get_percent_bar(percent, max_len):
+        # subtract 2 to account for [ and ]
+        max_len -= 2
+
         if options["print_bar"]:
-            return f"[\033[33;1m{'=' * int(40 * percent)}\033[0m{' ' * (40 - int(40 * percent))}] "
+            return f"[\033[33;1m{'=' * int(max_len * percent)}\033[0m" \
+                f"{' ' * (max_len - int(max_len * percent))}] "
         
         return ""
-    
-    
+
+
     def get_percent(percent):
         if options["print_percent"]:
-            return f"{percent * 100:5.2f}% "
+            return f"\033[1m{percent * 100:5.2f}% \033[0m"
         
         return ""
 
 
     for ext, cnt in extensions:
-        if cnt / total < 0.01:
+        if not options["show_all"] and (cnt / total * 100) <= float(options["minimum_percent"]):
             continue
 
-        print(f"{get_percent_bar(cnt / total)}\033[1m{get_percent(cnt / total)}\033[0m.{ext}")
+        string_after_percent_bar = f"{get_percent(cnt / total)}.{ext}"
+        print(f"{get_percent_bar(cnt / total, 60)}{string_after_percent_bar}")
 
 
 if __name__ == "__main__":
