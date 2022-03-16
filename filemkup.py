@@ -76,7 +76,7 @@ def main():
 
         extensions[extension] += 1
 
-    # extensions gets converted into list[(str, int)]
+    # extensions gets converted into list[tuple[str, int]]
     extensions = sorted(list(extensions.items()), key=lambda x: x[1], reverse=True)
 
     total = 0
@@ -84,16 +84,17 @@ def main():
     for _, cnt in extensions:
         total += cnt
 
-    
+
     def get_percent_bar(percent, max_len):
-        # subtract 2 to account for [ and ], and 10 for the colors
-        max_len -= 2 - 10
+        length = max_len - 2
 
         if options["print_bar"]:
-            bar = f"\033[33;1m{'=' * int(max_len * percent)}\033[0m"
-            wspace = f"{' ' * (max_len - len(bar))}"
+            bar = "=" * int(length * percent)
+            length -= len(bar)
 
-            return f"[{bar}{wspace}] "
+            spaces = " " * length
+
+            return f"[\033[33;1m{bar}\033[0m{spaces}] "
 
         return ""
 
