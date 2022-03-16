@@ -3,11 +3,6 @@
 import os
 import sys
 
-options = {
-    "print_bar": True,
-    "print_percent": True,
-}
-
 
 def parse_args(args):
     ret = {
