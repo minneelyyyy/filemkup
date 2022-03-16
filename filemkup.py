@@ -91,19 +91,21 @@ def main():
 
     
     def get_percent_bar(percent, max_len):
-        # subtract 2 to account for [ and ]
-        max_len -= 2
+        # subtract 2 to account for [ and ], and 10 for the colors
+        max_len -= 2 - 10
 
         if options["print_bar"]:
-            return f"[\033[33;1m{'=' * int(max_len * percent)}\033[0m" \
-                f"{' ' * (max_len - int(max_len * percent))}] "
-        
+            bar = f"\033[33;1m{'=' * int(max_len * percent)}\033[0m"
+            wspace = f"{' ' * (max_len - len(bar))}"
+
+            return f"[{bar}{wspace}] "
+
         return ""
 
 
     def get_percent(percent):
         if options["print_percent"]:
-            return f"\033[1m{percent * 100:5.2f}% \033[0m"
+            return f"\033[1m{percent * 100:5.2f}%\033[0m "
         
         return ""
 
@@ -112,8 +114,10 @@ def main():
         if not options["show_all"] and (cnt / total * 100) <= float(options["minimum_percent"]):
             continue
 
-        string_after_percent_bar = f"{get_percent(cnt / total)}.{ext}"
-        print(f"{get_percent_bar(cnt / total, 60)}{string_after_percent_bar}")
+        bar = get_percent_bar(cnt / total, 50)
+        percent = get_percent(cnt / total)
+
+        print(f"{bar}{percent}.{ext}")
 
 
 if __name__ == "__main__":
